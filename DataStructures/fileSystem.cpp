@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include <string.h>
 #include <set>
 #include <iterator>
@@ -17,6 +18,7 @@ class Node {
         this->name = name;
         this->parent = parent;
     }
+
     void addFile(string fname) {
         // check for it's existance
         // auto ind = files.find(fname);
@@ -60,7 +62,9 @@ class Node {
     }
 
     Node* cd(string s) {
-        if(s == " ..") {
+        if(s == "..") {
+            if(this->parent == NULL)
+                return this;
             // update path
             int end = path.length();
             while(path[--end] != '/'){}
@@ -70,38 +74,12 @@ class Node {
         }
 
         Node *temp = this;
-        bool flag=false;
-        int start=0,end=0;
-        while(end < s.length()) {
-            if(s[end] != '/') { 
-                end++;
-                continue;
-            }
-            // cout<<"data--"<<s.substr(start, end-start)<<"--"<<endl;
-            // finding if file exists
-            string dir_name = s.substr(start, end-start);
-            if(temp->subDirectory.find(dir_name) == temp->subDirectory.end()) {
-                cout<<"No such directory"<<endl;
-                return temp;
-            }
-            temp = temp->subDirectory.at(dir_name);
-            updatePath(temp->name);
-            end++;
-            start = end;
-            flag = true;
+        if(temp->subDirectory.find(s) == temp->subDirectory.end()) {
+            cout<<"No such directory"<<endl;
+            return temp;
         }
-        if(!flag) {
-            string dir_name = s.substr(start, s.length());
-            if(temp->subDirectory.find(dir_name) == temp->subDirectory.end()) {
-                cout<<"No such directory"<<endl;
-                return temp;
-            }
-            // cout<<"outside "<<s.substr(start, end-start)<<endl;
-            temp = subDirectory.at(dir_name);
-            // cout<<"name "<<temp->name<<endl;
-            updatePath(temp->name);
-        }
-        // iterate over nested paths
+        temp = temp->subDirectory.at(s);
+        updatePath(temp->name);
         return temp;
     }
 
@@ -153,12 +131,37 @@ class Dir {
     void pwd() {
         cout<<root->pwd()<<">"<<endl;
     }
+    string getPath() {
+        return root->pwd();
+    }
 };
 
-int processCommand(string s) {
-    int index = 0;
-    while(s[index++] != ' '){}
-    return index-1;
+int getNumberOfSpaces(string s) {
+    int count = 0;
+    for(int i=0; i<s.length(); i++){
+        if(s[i] == ' ')
+            count++;
+    }
+    return count;
+}
+
+void splitString(string s, string arr[]) {
+    int start = 0;
+    int ind = 0;
+    for(int i=0; i<s.length(); i++) {
+        if(s[i] == ' ') {
+            arr[ind++] = s.substr(start, i-start);
+            start = i+1;
+        }
+    }
+    arr[ind] = s.substr(start, s.length()-start);
+}
+
+bool isPath(string s) {
+    for(int i=0; i<s.length(); i++)
+        if(s[i] == '/')
+            return true;
+    return false;
 }
 
 int main() {
@@ -174,37 +177,79 @@ int main() {
     commands.insert(pair<string, int>("cd", 8));      // change dir   ----------
 
     string command;
-    int value, index;
+    int value;
     while(true) {
-        cout<<"$";
+        cout<<dir.getPath()<<"$";
         // read line including spaces
         getline(cin, command);
-        index = processCommand(command);
-        value = commands.find(command.substr(0, index))->second;
+        int size = getNumberOfSpaces(command)+1;
+        string arr[size];
+        splitString(command, arr);
+
+        value = commands.find(arr[0])->second;
         if(value == 1) {
             dir.displayStrucutre();
         }
         else if(value == 2) {
-            dir.addFile(command.substr(index, command.length()));
+            for(int i=1; i<size; i++)
+                dir.addFile(arr[i]);
         }
         else if(value == 3) {
-            dir.addDir(command.substr(index, command.length()));
+            for(int i=1; i<size; i++) {
+                if(isPath(arr[i])) {
+                    int start = 0;
+                    string s = arr[i];
+                    int pathCount = 0;
+                    for(int i=0; i<s.length(); i++) {                        
+                        if(s[i] == '/') {
+                            dir.addDir(s.substr(start, i-start));
+                            dir.cd(s.substr(start, i-start));
+                            start = i+1;
+                            pathCount++;
+                        }
+                    }
+                    dir.addDir(s.substr(start, s.length()-start));
+                    
+                    for(int i=0; i<pathCount; i++)
+                        dir.cd("..");
+                }
+                else 
+                    dir.addDir(arr[i]);
+            }
         }
         else if(value == 4) {
             break;
         }
         else if(value == 5) {
-            dir.removeFile(command.substr(index, command.length()));
+            for(int i=1; i<size; i++)
+                dir.removeFile(arr[i]);
         }
         else if(value == 6) {
-            dir.deleteDir(command.substr(index, command.length()));
+            for(int i=1; i<size; i++)
+                dir.deleteDir(arr[i]);
         }
         else if(value == 7) {
             dir.pwd();
         }
         else if(value == 8) {
-            // cout<<"substring--"<<command.substr(index, command.length())<<"--"<<endl;
-            dir.cd(command.substr(index, command.length()));
+            for(int i=1; i<size; i++) {
+                if(isPath(arr[i])) {
+                    int start = 0;
+                    string s = arr[i];
+                    for(int i=0; i<s.length(); i++) {                        
+                        if(s[i] == '/') {
+                            dir.cd(s.substr(start, i-start));
+                            start = i+1;
+                        }
+                    }
+                    dir.cd(s.substr(start, s.length()-start));
+                }
+                else 
+                    dir.cd(arr[i]);
+            }
+        }
+        else {
+            cout<<"Invalid command"<<endl;
         }
     }
 }
