@@ -1,0 +1,3 @@
+﻿  main.cpp
+C:\Users\ay185064\Desktop\Windows Programming\create2ChildProcess\main.cpp(41,49): warning C4302: 'type cast': truncation from 'HANDLE' to 'WCHAR'
+  create2ChildProcess.vcxproj -> C:\Users\ay185064\Desktop\Windows Programming\create2ChildProcess\Debug\create2ChildProcess.exe

@@ -1,0 +1,3 @@
+﻿  main.cpp
+C:\Users\ay185064\Desktop\Windows Programming\clientSocket\main.cpp(8,13): warning C4326: return type of 'main' should be 'int' instead of 'void'
+  clientSocket.vcxproj -> C:\Users\ay185064\Desktop\Windows Programming\clientSocket\Debug\clientSocket.exe

@@ -1,0 +1,4 @@
+C:\Users\ay185064\source\repos\semaphoreProg\Debug\semaphoreProg.exe
+C:\Users\ay185064\source\repos\semaphoreProg\Debug\semaphoreProg.pdb
+C:\Users\ay185064\Desktop\Assignments\Semaphores\semaphoreProg\Debug\semaphoreProg.exe
+C:\Users\ay185064\Desktop\Assignments\Semaphores\semaphoreProg\Debug\semaphoreProg.pdb

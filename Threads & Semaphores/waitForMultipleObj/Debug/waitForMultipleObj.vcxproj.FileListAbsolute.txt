@@ -1,0 +1,2 @@
+C:\Users\ay185064\source\repos\waitForMultipleObj\Debug\waitForMultipleObj.exe
+C:\Users\ay185064\source\repos\waitForMultipleObj\Debug\waitForMultipleObj.pdb
